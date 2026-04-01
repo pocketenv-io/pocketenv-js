@@ -1,6 +1,6 @@
 # @pocketenv/sdk
 
-Official JavaScript/TypeScript SDK for the [Pocketenv](https://pocketenv.com) API.
+Official JavaScript/TypeScript SDK for [Pocketenv](https://pocketenv.io).
 
 ## Installation
 
