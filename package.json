@@ -1,0 +1,48 @@
+{
+  "name": "@pocketenv/sdk",
+  "version": "0.1.0",
+  "description": "Official JavaScript/TypeScript SDK for the Pocketenv API",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "bun test",
+    "prepublishOnly": "bun run build && bun run test"
+  },
+  "keywords": [
+    "pocketenv",
+    "sandbox",
+    "sdk",
+    "api",
+    "cloud"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocketenv-io/pocketenv-js.git"
+  },
+  "homepage": "https://pocketenv.com",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "libsodium-wrappers": "^0.8.2",
+    "zod": "^4.3.6"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
