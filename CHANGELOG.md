@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2026-04-05
+
+### Fixed
+
+- **`Sandbox.get` / `waitUntilRunning`** — response is now parsed directly as `SandboxView` (not wrapped in `{ sandbox: ... }`) per the `sandboxViewBasic` lexicon.
+- **`SandboxView`** — removed `uri` (not in any lexicon view); added `timeout` field.
+- **`SecretView`** — removed `createdAt` (not in `secretView` lexicon).
+- **`VariableView`** — removed `createdAt` (not in `variableView` lexicon).
+- **`SshKeysView`** — added `id`, `createdAt`, `updatedAt` per `sshKeysView` lexicon.
+- **`TailscaleAuthKeyView`** — added `id`, `redacted`, `createdAt`, `updatedAt` per `tailscaleAuthKeyView` lexicon.
+- **`ServiceView`** — removed `status` (not in `serviceView` lexicon).
+- **`Service.list`** — removed unsupported `limit`/`offset` params; return type is now `{ services: ServiceView[] }` (no `total`).
+- **`Service.start` / `stop` / `restart` / `delete`** — removed extra `sandboxId` param from request body (only `serviceId` required per lexicon).
+- **`Service.update`** — moved `serviceId` to query params per lexicon (was previously in request body).
+
 ## [0.2.1] - 2026-04-05
 
 ### Added
