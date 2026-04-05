@@ -153,10 +153,15 @@ describe("Sandbox.list", () => {
 
   test("lists sandboxes", async () => {
     const views = [mockSandboxView(), mockSandboxView({ id: "sb-2" })];
-    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ sandboxes: views, total: 2 }),
-    } as Response);
+    fetchSpy = spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ did: "did:plc:test" }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ sandboxes: views, total: 2 }),
+      } as Response);
 
     Sandbox.configure({ token: "tok" });
     const result = await Sandbox.list();
@@ -166,15 +171,20 @@ describe("Sandbox.list", () => {
   });
 
   test("passes pagination params", async () => {
-    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ sandboxes: [], total: 0 }),
-    } as Response);
+    fetchSpy = spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ did: "did:plc:test" }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ sandboxes: [], total: 0 }),
+      } as Response);
 
     Sandbox.configure({ token: "tok" });
     await Sandbox.list({ limit: 10, offset: 20 });
 
-    const [url] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    const [url] = fetchSpy.mock.calls[1] as [string, RequestInit];
     expect(url).toContain("limit=10");
     expect(url).toContain("offset=20");
   });
