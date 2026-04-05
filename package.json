@@ -1,6 +1,6 @@
 {
   "name": "@pocketenv/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Official JavaScript/TypeScript SDK for the Pocketenv API",
   "type": "module",
   "main": "./dist/index.js",
@@ -33,7 +33,7 @@
     "type": "git",
     "url": "https://github.com/pocketenv-io/pocketenv-js.git"
   },
-  "homepage": "https://pocketenv.com",
+  "homepage": "https://pocketenv.io",
   "devDependencies": {
     "@types/bun": "latest",
     "typescript": "^5"
