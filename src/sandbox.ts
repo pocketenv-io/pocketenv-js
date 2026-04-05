@@ -98,7 +98,7 @@ import { Service } from "./service";
 import { Tailscale } from "./tailscale";
 import { Volume } from "./volume";
 
-const DEFAULT_BASE_URL = "https://api.pocketenv.com";
+const DEFAULT_BASE_URL = "https://api.pocketenv.io";
 
 export class Sandbox {
   readonly id: string;
@@ -116,7 +116,7 @@ export class Sandbox {
 
   private constructor(
     data: SandboxView,
-    private client: ApiClient
+    private client: ApiClient,
   ) {
     this.id = data.id;
     this.data = data;
@@ -136,14 +136,17 @@ export class Sandbox {
     token: string;
     baseUrl?: string;
   }): void {
-    Sandbox._client = new ApiClient({ token, baseUrl: baseUrl ?? DEFAULT_BASE_URL });
+    Sandbox._client = new ApiClient({
+      token,
+      baseUrl: baseUrl ?? DEFAULT_BASE_URL,
+    });
   }
 
   private static getClient(client?: ApiClient): ApiClient {
     const c = client ?? Sandbox._client;
     if (!c) {
       throw new Error(
-        "No API client configured. Call Sandbox.configure({ token }) or pass a client."
+        "No API client configured. Call Sandbox.configure({ token }) or pass a client.",
       );
     }
     return c;
@@ -154,7 +157,7 @@ export class Sandbox {
   }
 
   static async create(
-    options: CreateSandboxOptions & { token?: string; baseUrl?: string }
+    options: CreateSandboxOptions & { token?: string; baseUrl?: string },
   ): Promise<Sandbox> {
     const { token, baseUrl, ...body } = options;
     const client = token
@@ -162,7 +165,7 @@ export class Sandbox {
       : Sandbox.getClient();
     const data = await client.post<SandboxView>(
       "io.pocketenv.sandbox.createSandbox",
-      body
+      body,
     );
     return new Sandbox(data, client);
   }
@@ -171,20 +174,23 @@ export class Sandbox {
     const c = Sandbox.getClient(client);
     const res = await c.get<{ sandbox: SandboxView }>(
       "io.pocketenv.sandbox.getSandbox",
-      { id }
+      { id },
     );
     return new Sandbox(res.sandbox, c);
   }
 
   static async list(
-    options?: ListOptions & { client?: ApiClient }
+    options?: ListOptions & { client?: ApiClient },
   ): Promise<{ sandboxes: SandboxView[]; total: number }> {
     const { client, ...params } = options ?? {};
     const c = Sandbox.getClient(client);
     return c.get("io.pocketenv.sandbox.getSandboxes", params);
   }
 
-  async start(options?: { repo?: string; keepAlive?: boolean }): Promise<SandboxView> {
+  async start(options?: {
+    repo?: string;
+    keepAlive?: boolean;
+  }): Promise<SandboxView> {
     return this.client.post("io.pocketenv.sandbox.startSandbox", options, {
       id: this.id,
     });
@@ -203,10 +209,17 @@ export class Sandbox {
   }
 
   async exec(command: string): Promise<ExecResult> {
-    return this.client.post("io.pocketenv.sandbox.exec", { command }, { id: this.id });
+    return this.client.post(
+      "io.pocketenv.sandbox.exec",
+      { command },
+      { id: this.id },
+    );
   }
 
-  sh(strings: TemplateStringsArray | string, ...values: unknown[]): Promise<ExecResult> {
+  sh(
+    strings: TemplateStringsArray | string,
+    ...values: unknown[]
+  ): Promise<ExecResult> {
     const command =
       typeof strings === "string"
         ? strings
@@ -215,11 +228,14 @@ export class Sandbox {
     return this.exec(`/bin/sh -c ${quoted}`);
   }
 
-  async expose(port: number, description?: string): Promise<{ previewUrl?: string }> {
+  async expose(
+    port: number,
+    description?: string,
+  ): Promise<{ previewUrl?: string }> {
     return this.client.post(
       "io.pocketenv.sandbox.exposePort",
       { port, description },
-      { id: this.id }
+      { id: this.id },
     );
   }
 
@@ -227,7 +243,7 @@ export class Sandbox {
     await this.client.post(
       "io.pocketenv.sandbox.unexposePort",
       { port },
-      { id: this.id }
+      { id: this.id },
     );
   }
 
@@ -245,7 +261,7 @@ export class Sandbox {
     await this.client.post(
       "io.pocketenv.sandbox.putSshKeys",
       { publicKey },
-      { id: this.id }
+      { id: this.id },
     );
   }
 }
