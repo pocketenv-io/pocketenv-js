@@ -130,7 +130,7 @@ describe("Sandbox.get", () => {
     const view = mockSandboxView({ id: "sb-get" });
     fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ sandbox: view }),
+      json: async () => view,
     } as Response);
 
     Sandbox.configure({ token: "tok" });

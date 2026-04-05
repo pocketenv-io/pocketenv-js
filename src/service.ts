@@ -1,5 +1,5 @@
 import type { ApiClient } from "./api-client/api-client.js";
-import type { ListOptions, ServiceView } from "./api-client/validators.js";
+import type { ServiceView } from "./api-client/validators.js";
 
 export class Service {
   constructor(
@@ -19,50 +19,43 @@ export class Service {
     );
   }
 
-  async list(options?: ListOptions): Promise<{ services: ServiceView[]; total: number }> {
+  async list(): Promise<{ services: ServiceView[] }> {
     return this.client.get("io.pocketenv.service.getServices", {
       sandboxId: this.sandboxId,
-      limit: options?.limit,
-      offset: options?.offset,
     });
   }
 
   async start(serviceId: string): Promise<void> {
     await this.client.post("io.pocketenv.service.startService", undefined, {
-      sandboxId: this.sandboxId,
       serviceId,
     });
   }
 
   async stop(serviceId: string): Promise<void> {
     await this.client.post("io.pocketenv.service.stopService", undefined, {
-      sandboxId: this.sandboxId,
       serviceId,
     });
   }
 
   async restart(serviceId: string): Promise<void> {
     await this.client.post("io.pocketenv.service.restartService", undefined, {
-      sandboxId: this.sandboxId,
       serviceId,
     });
   }
 
   async update(
-    id: string,
+    serviceId: string,
     name: string,
     command: string,
     options?: { description?: string; ports?: number[] }
   ): Promise<void> {
     await this.client.post("io.pocketenv.service.updateService", {
-      id,
       service: { name, command, ...options },
-    });
+    }, { serviceId });
   }
 
   async delete(serviceId: string): Promise<void> {
     await this.client.post("io.pocketenv.service.deleteService", undefined, {
-      sandboxId: this.sandboxId,
       serviceId,
     });
   }

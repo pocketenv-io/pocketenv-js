@@ -14,23 +14,21 @@ export interface SandboxView {
   ports?: number[];
   installs?: number;
   createdAt: string;
-  uri?: string;
   baseSandbox?: string;
   status?: string;
   startedAt?: string;
+  timeout?: number;
 }
 
 export interface SecretView {
   id: string;
   name: string;
-  createdAt: string;
 }
 
 export interface VariableView {
   id: string;
   name: string;
   value: string;
-  createdAt: string;
 }
 
 export interface FileView {
@@ -55,7 +53,6 @@ export interface ServiceView {
   command: string;
   description?: string;
   ports?: number[];
-  status?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -73,8 +70,11 @@ export interface ExecResult {
 }
 
 export interface SshKeysView {
+  id?: string;
   publicKey?: string;
   privateKey?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface SSHKeyPair {
@@ -83,7 +83,11 @@ export interface SSHKeyPair {
 }
 
 export interface TailscaleAuthKeyView {
+  id?: string;
   authKey?: string;
+  redacted?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreateSandboxOptions {

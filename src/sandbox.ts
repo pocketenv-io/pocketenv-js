@@ -216,11 +216,11 @@ export class Sandbox {
 
   static async get(id: string, client?: ApiClient): Promise<Sandbox> {
     const c = Sandbox.getClient(client);
-    const res = await c.get<{ sandbox: SandboxView }>(
+    const data = await c.get<SandboxView>(
       "io.pocketenv.sandbox.getSandbox",
       { id },
     );
-    return new Sandbox(res.sandbox, c, Sandbox.resolvePublicKey());
+    return new Sandbox(data, c, Sandbox.resolvePublicKey());
   }
 
   static async list(
@@ -251,11 +251,11 @@ export class Sandbox {
     const { timeoutMs = 60_000, intervalMs = 2_000 } = options ?? {};
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
-      const res = await this.client.get<{ sandbox: SandboxView | null }>(
+      const data = await this.client.get<SandboxView>(
         "io.pocketenv.sandbox.getSandbox",
         { id: this.id },
       );
-      if (res.sandbox?.status === "RUNNING") return;
+      if (data?.status === "RUNNING") return;
       await new Promise((resolve) => setTimeout(resolve, intervalMs));
     }
     throw new Error(
