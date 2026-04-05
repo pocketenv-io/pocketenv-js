@@ -8,7 +8,7 @@ import {
   test,
 } from "bun:test";
 import { ApiClient } from "./api-client/api-client";
-import { Sandbox } from "./sandbox";
+import { Sandbox, SandboxBuilder } from "./sandbox";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -272,7 +272,7 @@ describe("Sandbox instance methods", () => {
 
     const [, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
     const body = JSON.parse(init.body as string);
-    expect(body.command).toBe('/bin/sh -c "ls -la"');
+    expect(body.command).toBe("/bin/sh -c 'ls -la'");
   });
 
   test("expose calls exposePort and returns previewUrl", async () => {
@@ -786,6 +786,92 @@ describe("sandbox.tailscale", () => {
     expect(JSON.parse(init.body as string)).toEqual({
       authKey: "tskey-abc123",
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SandboxBuilder
+// ---------------------------------------------------------------------------
+
+describe("SandboxBuilder", () => {
+  let fetchSpy: ReturnType<typeof spyOn>;
+
+  afterEach(() => {
+    fetchSpy?.mockRestore();
+    (Sandbox as unknown as { _client: null })._client = null;
+  });
+
+  test("Sandbox.builder returns a SandboxBuilder", () => {
+    const builder = Sandbox.builder("openclaw");
+    expect(builder).toBeInstanceOf(SandboxBuilder);
+  });
+
+  test("builder.create() calls Sandbox.create with accumulated options", async () => {
+    const view = mockSandboxView();
+    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      text: async () => JSON.stringify(view),
+    } as Response);
+
+    await Sandbox.builder("openclaw")
+      .name("my-env")
+      .vcpus(4)
+      .memory(8192)
+      .env("NODE_ENV", "production")
+      .env("PORT", "3000")
+      .secret("API_KEY", "s3cr3t")
+      .keepAlive()
+      .token("tok")
+      .create();
+
+    const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    expect(url).toContain("createSandbox");
+    const body = JSON.parse(init.body as string);
+    expect(body.base).toBe("openclaw");
+    expect(body.name).toBe("my-env");
+    expect(body.vcpus).toBe(4);
+    expect(body.memory).toBe(8192);
+    expect(body.keepAlive).toBe(true);
+    expect(body.envs).toEqual([
+      { name: "NODE_ENV", value: "production" },
+      { name: "PORT", value: "3000" },
+    ]);
+    expect(body.secrets).toEqual([{ name: "API_KEY", value: "s3cr3t" }]);
+  });
+
+  test("multiple env/secret calls accumulate entries", async () => {
+    const view = mockSandboxView();
+    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      text: async () => JSON.stringify(view),
+    } as Response);
+
+    await Sandbox.builder("openclaw")
+      .env("A", "1")
+      .env("B", "2")
+      .secret("X", "foo")
+      .secret("Y", "bar")
+      .token("tok")
+      .create();
+
+    const [, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(init.body as string);
+    expect(body.envs).toHaveLength(2);
+    expect(body.secrets).toHaveLength(2);
+  });
+
+  test("keepAlive defaults to true when called with no argument", async () => {
+    const view = mockSandboxView();
+    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      text: async () => JSON.stringify(view),
+    } as Response);
+
+    await Sandbox.builder("openclaw").keepAlive().token("tok").create();
+
+    const [, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(init.body as string);
+    expect(body.keepAlive).toBe(true);
   });
 });
 
