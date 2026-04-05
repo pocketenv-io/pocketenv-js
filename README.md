@@ -1,5 +1,9 @@
 # @pocketenv/sdk
 
+[![npm version](https://img.shields.io/npm/v/@pocketenv/sdk?color=green)](https://www.npmjs.com/package/@pocketenv/sdk)
+![NPM Downloads](https://img.shields.io/npm/dw/%40pocketenv%2Fsdk)
+[![discord](https://img.shields.io/discord/1270021300240252979?label=discord&logo=discord&color=5865F2)](https://discord.gg/9ada4pFUFS)
+
 Official JavaScript/TypeScript SDK for [Pocketenv](https://pocketenv.io).
 
 ## Installation
