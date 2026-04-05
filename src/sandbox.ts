@@ -1,4 +1,4 @@
-import { ApiClient } from "./api-client/api-client";
+import { ApiClient } from "./api-client/api-client.js";
 import type {
   CreateSandboxOptions,
   ExecResult,
@@ -6,7 +6,7 @@ import type {
   Profile,
   SandboxView,
   SshKeysView,
-} from "./api-client/validators";
+} from "./api-client/validators.js";
 
 export class SandboxBuilder {
   private options: CreateSandboxOptions & { token?: string; baseUrl?: string };
@@ -91,13 +91,13 @@ export class SandboxBuilder {
     return Sandbox.create(this.options);
   }
 }
-import { Env } from "./env";
-import { File } from "./file";
-import { Ports } from "./ports";
-import { Secret } from "./secret";
-import { Service } from "./service";
-import { Tailscale } from "./tailscale";
-import { Volume } from "./volume";
+import { Env } from "./env.js";
+import { File } from "./file.js";
+import { Ports } from "./ports.js";
+import { Secret } from "./secret.js";
+import { Service } from "./service.js";
+import { Tailscale } from "./tailscale.js";
+import { Volume } from "./volume.js";
 
 const DEFAULT_BASE_URL = "https://api.pocketenv.io";
 

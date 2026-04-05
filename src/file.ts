@@ -1,5 +1,5 @@
-import type { ApiClient } from "./api-client/api-client";
-import type { FileView, ListOptions } from "./api-client/validators";
+import type { ApiClient } from "./api-client/api-client.js";
+import type { FileView, ListOptions } from "./api-client/validators.js";
 
 export class File {
   constructor(

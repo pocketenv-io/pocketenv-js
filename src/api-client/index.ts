@@ -1,2 +1,2 @@
-export { ApiClient } from "./api-client";
-export * from "./validators";
+export { ApiClient } from "./api-client.js";
+export * from "./validators.js";
