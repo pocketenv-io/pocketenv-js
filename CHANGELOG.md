@@ -12,6 +12,21 @@ All notable changes to this project will be documented in this file.
   - `copy.to(destinationSandboxId, sourcePath, destPath)` — copy a path from this sandbox directly into another sandbox (no local download needed).
 - All copy methods accept an optional `{ signal }` option for cancellation via `AbortController`.
 - **`Sandbox.configure({ storageUrl })`** — optional override for the storage service URL (defaults to `https://sandbox.pocketenv.io`).
+- **`Sandbox.getProfile()`** — static method that fetches the authenticated user's profile (`io.pocketenv.actor.getProfile`).
+- **`Sandbox.getTerminalToken()`** — static method that fetches a short-lived terminal token (`io.pocketenv.actor.getTerminalToken`) used to open a Cloudflare WebSocket terminal session.
+- **`sandbox.waitUntilRunning({ timeoutMs?, intervalMs? })`** — polls `getSandbox` until status is `RUNNING`, throws on timeout.
+- **`providerOptions`** field in `CreateSandboxOptions` and `SandboxBuilder.providerOptions()` — spread into the create body, enabling provider-specific tokens (sprites, daytona, deno, vercel) to be passed through.
+- **`encrypt`** exported from the package root — allows callers to encrypt provider tokens before passing them in `providerOptions`.
+- **All view types exported** from the package root: `SandboxView`, `Profile`, `SecretView`, `VariableView`, `FileView`, `VolumeView`, `ServiceView`, `PortView`, `SshKeysView`, `TailscaleAuthKeyView`, `ExecResult`, `ListOptions`, `CreateSandboxOptions`.
+
+### Changed
+
+- **`File.write` and `File.update`** — file content is now encrypted with sodium before upload, consistent with secrets and Tailscale keys.
+- **`ListOptions.isRunning`** — new optional field forwarded to `getActorSandboxes`, enabling `Sandbox.list({ isRunning: true })`.
+- **`SecretView`** — added `createdAt` field.
+- **`VariableView`** — added `createdAt` field.
+- **`PortView`** — added `description` field.
+- **`ServiceView`** — added `status` field.
 
 ## [0.2.0] - 2026-04-05
 
