@@ -3,6 +3,7 @@ import type {
   CreateSandboxOptions,
   ExecResult,
   ListOptions,
+  Profile,
   SandboxView,
   SshKeysView,
 } from "./api-client/validators";
@@ -133,11 +134,16 @@ export class Sandbox {
     token,
     baseUrl,
   }: {
-    token: string;
+    token?: string;
     baseUrl?: string;
-  }): void {
+  } = {}): void {
+    if (!token && !process.env.POCKETENV_TOKEN) {
+      throw new Error(
+        "API token is required. Pass it to configure() or set the POCKETENV_TOKEN environment variable.",
+      );
+    }
     Sandbox._client = new ApiClient({
-      token,
+      token: token ?? process.env.POCKETENV_TOKEN!,
       baseUrl: baseUrl ?? DEFAULT_BASE_URL,
     });
   }
@@ -184,7 +190,8 @@ export class Sandbox {
   ): Promise<{ sandboxes: SandboxView[]; total: number }> {
     const { client, ...params } = options ?? {};
     const c = Sandbox.getClient(client);
-    return c.get("io.pocketenv.sandbox.getSandboxes", params);
+    const { did } = await c.get<Profile>("io.pocketenv.actor.getProfile");
+    return c.get("io.pocketenv.actor.getActorSandboxes", { did, ...params });
   }
 
   async start(options?: {

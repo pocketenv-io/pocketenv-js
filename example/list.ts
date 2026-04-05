@@ -1,7 +1,6 @@
 import { Sandbox } from "../src/index";
 
-Sandbox.configure({ token: process.env.POCKETENV_TOKEN! });
-
+Sandbox.configure();
 const { sandboxes, total } = await Sandbox.list({ limit: 10, offset: 0 });
 
 console.log(`Total sandboxes: ${total}`);
