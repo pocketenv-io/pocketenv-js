@@ -70,6 +70,12 @@ export interface ExecResult {
 
 export interface SshKeysView {
   publicKey?: string;
+  privateKey?: string;
+}
+
+export interface SSHKeyPair {
+  publicKey: string;
+  privateKey: string;
 }
 
 export interface TailscaleAuthKeyView {

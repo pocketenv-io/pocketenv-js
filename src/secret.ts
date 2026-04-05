@@ -1,15 +1,20 @@
 import type { ApiClient } from "./api-client/api-client.js";
 import type { ListOptions, SecretView } from "./api-client/validators.js";
+import { encrypt } from "./encrypt.js";
 
 export class Secret {
   constructor(
     private sandboxId: string,
-    private client: ApiClient
+    private client: ApiClient,
+    private publicKeyHex?: string,
   ) {}
 
   async put(name: string, value: string): Promise<void> {
+    const encryptedValue = this.publicKeyHex
+      ? await encrypt(value, this.publicKeyHex)
+      : value;
     await this.client.post("io.pocketenv.secret.addSecret", {
-      secret: { sandboxId: this.sandboxId, name, value },
+      secret: { sandboxId: this.sandboxId, name, value: encryptedValue },
     });
   }
 

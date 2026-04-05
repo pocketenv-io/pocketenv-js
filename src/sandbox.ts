@@ -96,10 +96,13 @@ import { File } from "./file.js";
 import { Ports } from "./ports.js";
 import { Secret } from "./secret.js";
 import { Service } from "./service.js";
+import { SshKeys } from "./sshkeys.js";
 import { Tailscale } from "./tailscale.js";
 import { Volume } from "./volume.js";
 
 const DEFAULT_BASE_URL = "https://api.pocketenv.io";
+const DEFAULT_PUBLIC_KEY =
+  "2bf96e12d109e6948046a7803ef1696e12c11f04f20a6ce64dbd4bcd93db9341";
 
 export class Sandbox {
   readonly id: string;
@@ -110,22 +113,26 @@ export class Sandbox {
   readonly env: Env;
   readonly secret: Secret;
   readonly tailscale: Tailscale;
+  readonly sshKeys: SshKeys;
   readonly ports: Ports;
   readonly service: Service;
 
   private static _client: ApiClient | null = null;
+  private static _publicKey: string | null = null;
 
   private constructor(
     data: SandboxView,
     private client: ApiClient,
+    publicKeyHex?: string,
   ) {
     this.id = data.id;
     this.data = data;
     this.file = new File(data.id, client);
     this.volume = new Volume(data.id, client);
     this.env = new Env(data.id, client);
-    this.secret = new Secret(data.id, client);
-    this.tailscale = new Tailscale(data.id, client);
+    this.secret = new Secret(data.id, client, publicKeyHex);
+    this.tailscale = new Tailscale(data.id, client, publicKeyHex);
+    this.sshKeys = new SshKeys(data.id, client, publicKeyHex);
     this.ports = new Ports(data.id, client);
     this.service = new Service(data.id, client);
   }
@@ -133,9 +140,11 @@ export class Sandbox {
   static configure({
     token,
     baseUrl,
+    publicKey,
   }: {
     token?: string;
     baseUrl?: string;
+    publicKey?: string;
   } = {}): void {
     if (!token && !process.env.POCKETENV_TOKEN) {
       throw new Error(
@@ -146,6 +155,8 @@ export class Sandbox {
       token: token ?? process.env.POCKETENV_TOKEN!,
       baseUrl: baseUrl ?? DEFAULT_BASE_URL,
     });
+    Sandbox._publicKey =
+      publicKey ?? process.env.POCKETENV_PUBLIC_KEY ?? DEFAULT_PUBLIC_KEY;
   }
 
   private static getClient(client?: ApiClient): ApiClient {
@@ -163,17 +174,26 @@ export class Sandbox {
   }
 
   static async create(
-    options: CreateSandboxOptions & { token?: string; baseUrl?: string },
+    options: CreateSandboxOptions & {
+      token?: string;
+      baseUrl?: string;
+      publicKey?: string;
+    },
   ): Promise<Sandbox> {
-    const { token, baseUrl, ...body } = options;
+    const { token, baseUrl, publicKey, ...body } = options;
     const client = token
       ? new ApiClient({ token, baseUrl: baseUrl ?? DEFAULT_BASE_URL })
       : Sandbox.getClient();
+    const publicKeyHex =
+      publicKey ??
+      Sandbox._publicKey ??
+      process.env.POCKETENV_PUBLIC_KEY ??
+      DEFAULT_PUBLIC_KEY;
     const data = await client.post<SandboxView>(
       "io.pocketenv.sandbox.createSandbox",
       body,
     );
-    return new Sandbox(data, client);
+    return new Sandbox(data, client, publicKeyHex ?? undefined);
   }
 
   static async get(id: string, client?: ApiClient): Promise<Sandbox> {
@@ -182,7 +202,11 @@ export class Sandbox {
       "io.pocketenv.sandbox.getSandbox",
       { id },
     );
-    return new Sandbox(res.sandbox, c);
+    return new Sandbox(
+      res.sandbox,
+      c,
+      Sandbox._publicKey ?? process.env.POCKETENV_PUBLIC_KEY ?? DEFAULT_PUBLIC_KEY,
+    );
   }
 
   static async list(
@@ -261,7 +285,7 @@ export class Sandbox {
   }
 
   async getSshKeys(): Promise<SshKeysView> {
-    return this.client.get("io.pocketenv.sandbox.getSshKeys", { id: this.id });
+    return this.sshKeys.get();
   }
 
   async putSshKey(publicKey: string): Promise<void> {

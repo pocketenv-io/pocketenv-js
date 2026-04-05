@@ -331,7 +331,7 @@ describe("Sandbox instance methods", () => {
   test("getSshKeys returns key view", async () => {
     fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ publicKey: "ssh-rsa AAAA..." }),
+      json: async () => ({ publicKey: "ssh-rsa AAAA...", privateKey: "-----BEGIN OPENSSH PRIVATE KEY-----\n..." }),
     } as Response);
 
     const keys = await sandbox.getSshKeys();
@@ -341,7 +341,7 @@ describe("Sandbox instance methods", () => {
     expect(url).toContain("getSshKeys");
   });
 
-  test("putSshKey sends public key", async () => {
+  test("putSshKey sends public key (legacy)", async () => {
     fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
       text: async () => "",
@@ -530,7 +530,8 @@ describe("sandbox.secret", () => {
     expect(url).toContain("addSecret");
     const body = JSON.parse(init.body as string);
     expect(body.secret.name).toBe("API_KEY");
-    expect(body.secret.value).toBe("supersecret");
+    expect(typeof body.secret.value).toBe("string");
+    expect(body.secret.value.length).toBeGreaterThan(0);
   });
 
   test("list returns secrets", async () => {
@@ -750,6 +751,67 @@ describe("sandbox.service", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Sub-resource: SshKeys
+// ---------------------------------------------------------------------------
+
+describe("sandbox.sshKeys", () => {
+  let fetchSpy: ReturnType<typeof spyOn>;
+  let sandbox: Sandbox;
+
+  beforeEach(async () => {
+    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      text: async () => JSON.stringify(mockSandboxView()),
+    } as Response);
+    sandbox = await Sandbox.create({ base: "openclaw", token: "tok" });
+    fetchSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    fetchSpy?.mockRestore();
+  });
+
+  test("get returns ssh key view", async () => {
+    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ publicKey: "ssh-ed25519 AAAA...", privateKey: "-----BEGIN OPENSSH PRIVATE KEY-----\n..." }),
+    } as Response);
+
+    const keys = await sandbox.sshKeys.get();
+
+    expect(keys.publicKey).toBe("ssh-ed25519 AAAA...");
+    expect(keys.privateKey).toBeDefined();
+    const [url] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    expect(url).toContain("getSshKeys");
+  });
+
+  test("put sends id, publicKey, privateKey, and redacted in body", async () => {
+    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      text: async () => "",
+    } as Response);
+
+    const privateKey =
+      "-----BEGIN OPENSSH PRIVATE KEY-----\nABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n-----END OPENSSH PRIVATE KEY-----\n";
+    await sandbox.sshKeys.put("ssh-ed25519 AAAA...", privateKey);
+
+    const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    expect(url).toContain("putSshKeys");
+    const body = JSON.parse(init.body as string);
+    expect(body.id).toBe("sandbox-1");
+    expect(body.publicKey).toBe("ssh-ed25519 AAAA...");
+    expect(body.privateKey).toBeDefined();
+    expect(body.redacted).toContain("*");
+  });
+
+  test("generate returns an SSHKeyPair", async () => {
+    const pair = await sandbox.sshKeys.generate();
+    expect(pair.publicKey).toMatch(/^ssh-ed25519 /);
+    expect(pair.privateKey).toContain("-----BEGIN OPENSSH PRIVATE KEY-----");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Sub-resource: Tailscale
 // ---------------------------------------------------------------------------
 
@@ -783,19 +845,28 @@ describe("sandbox.tailscale", () => {
     expect(url).toContain("getTailscaleAuthKey");
   });
 
-  test("setAuthKey sends auth key", async () => {
+  test("setAuthKey sends auth key with id and redacted", async () => {
     fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
       text: async () => "",
     } as Response);
 
-    await sandbox.tailscale.setAuthKey("tskey-abc123");
+    await sandbox.tailscale.setAuthKey("tskey-auth-abc123test789");
 
     const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
     expect(url).toContain("putTailscaleAuthKey");
-    expect(JSON.parse(init.body as string)).toEqual({
-      authKey: "tskey-abc123",
-    });
+    const body = JSON.parse(init.body as string);
+    expect(body.id).toBe("sandbox-1");
+    expect(typeof body.authKey).toBe("string");
+    expect(body.authKey.length).toBeGreaterThan(0);
+    expect(body.redacted).toContain("tskey-auth-");
+    expect(body.redacted).toContain("*");
+  });
+
+  test("setAuthKey throws on invalid key prefix", async () => {
+    await expect(
+      sandbox.tailscale.setAuthKey("tskey-abc123"),
+    ).rejects.toThrow("Invalid Tailscale Auth Key");
   });
 });
 
