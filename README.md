@@ -80,18 +80,18 @@ List all sandboxes.
 
 ### Instance methods
 
-| Method | Description |
-|---|---|
-| `sandbox.start({ repo?, keepAlive? })` | Start the sandbox |
-| `sandbox.stop()` | Stop the sandbox |
-| `sandbox.delete()` | Delete the sandbox |
-| `sandbox.exec(command)` | Run a raw command |
-| `sandbox.sh\`command\`` | Run a shell command via `/bin/sh -c` (tagged template or string) |
-| `sandbox.expose(port, description?)` | Expose a port publicly |
-| `sandbox.unexpose(port)` | Remove a port exposure |
-| `sandbox.vscode()` | Expose VS Code |
-| `sandbox.getSshKeys()` | Get SSH public key |
-| `sandbox.putSshKey(publicKey)` | Set an SSH public key |
+| Method                                 | Description        |
+|----------------------------------------|--------------------|
+| `sandbox.start({ repo?, keepAlive? })` | Start the sandbox  |
+| `sandbox.stop()`                       | Stop the sandbox   |
+| `sandbox.delete()`                     | Delete the sandbox |
+| `sandbox.exec(command)`                | Run a raw command  |
+| `sandbox.sh\`command\`                 | Run a shell command via `/bin/sh -c` (tagged template or string) |
+| `sandbox.expose(port, description?)`   | Expose a port publicly |
+| `sandbox.unexpose(port)`               | Remove a port exposure |
+| `sandbox.vscode()`                     | Expose VS Code         |
+| `sandbox.getSshKeys()`                 | Get SSH public key     |
+| `sandbox.putSshKey(publicKey)`         | Set an SSH public key  |
 
 ### Sub-resources
 
