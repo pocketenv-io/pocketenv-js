@@ -52,6 +52,24 @@ const sandbox = await Sandbox.create({
 });
 ```
 
+### `Sandbox.builder(base)`
+
+Fluent builder for creating sandboxes — useful when setting many options, especially multiple envs or secrets.
+
+```ts
+const sandbox = await Sandbox.builder("openclaw")
+  .name("my-sandbox")
+  .vcpus(4)
+  .memory(8192)
+  .env("NODE_ENV", "production")
+  .env("PORT", "3000")
+  .secret("API_KEY", process.env.API_KEY!)
+  .keepAlive()
+  .create();
+```
+
+Available builder methods: `name`, `description`, `provider`, `topics`, `repo`, `vcpus`, `memory`, `disk`, `readme`, `env`, `secret`, `keepAlive`, `token`, `baseUrl`.
+
 ### `Sandbox.get(id)`
 
 Fetch an existing sandbox by ID.

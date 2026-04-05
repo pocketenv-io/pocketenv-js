@@ -6,6 +6,90 @@ import type {
   SandboxView,
   SshKeysView,
 } from "./api-client/validators";
+
+export class SandboxBuilder {
+  private options: CreateSandboxOptions & { token?: string; baseUrl?: string };
+
+  constructor(base: string) {
+    this.options = { base };
+  }
+
+  name(name: string): this {
+    this.options.name = name;
+    return this;
+  }
+
+  description(description: string): this {
+    this.options.description = description;
+    return this;
+  }
+
+  provider(provider: string): this {
+    this.options.provider = provider;
+    return this;
+  }
+
+  topics(...topics: string[]): this {
+    this.options.topics = topics;
+    return this;
+  }
+
+  repo(repo: string): this {
+    this.options.repo = repo;
+    return this;
+  }
+
+  vcpus(vcpus: number): this {
+    this.options.vcpus = vcpus;
+    return this;
+  }
+
+  memory(memory: number): this {
+    this.options.memory = memory;
+    return this;
+  }
+
+  disk(disk: number): this {
+    this.options.disk = disk;
+    return this;
+  }
+
+  readme(readme: string): this {
+    this.options.readme = readme;
+    return this;
+  }
+
+  env(name: string, value: string): this {
+    this.options.envs ??= [];
+    this.options.envs.push({ name, value });
+    return this;
+  }
+
+  secret(name: string, value: string): this {
+    this.options.secrets ??= [];
+    this.options.secrets.push({ name, value });
+    return this;
+  }
+
+  keepAlive(keepAlive = true): this {
+    this.options.keepAlive = keepAlive;
+    return this;
+  }
+
+  token(token: string): this {
+    this.options.token = token;
+    return this;
+  }
+
+  baseUrl(baseUrl: string): this {
+    this.options.baseUrl = baseUrl;
+    return this;
+  }
+
+  create(): Promise<Sandbox> {
+    return Sandbox.create(this.options);
+  }
+}
 import { Env } from "./env";
 import { File } from "./file";
 import { Ports } from "./ports";
@@ -63,6 +147,10 @@ export class Sandbox {
       );
     }
     return c;
+  }
+
+  static builder(base: string): SandboxBuilder {
+    return new SandboxBuilder(base);
   }
 
   static async create(

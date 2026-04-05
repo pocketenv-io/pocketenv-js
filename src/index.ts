@@ -1,1 +1,1 @@
-export { Sandbox } from "./sandbox";
+export { Sandbox, SandboxBuilder } from "./sandbox";
