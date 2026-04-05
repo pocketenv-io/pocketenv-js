@@ -41,7 +41,7 @@ await sandbox.delete();
 
 ## API
 
-### `Sandbox.configure({ token, baseUrl? })`
+### `Sandbox.configure({ token?, baseUrl? })`
 
 Set a global API token (and optional base URL) used by all subsequent calls.
 
