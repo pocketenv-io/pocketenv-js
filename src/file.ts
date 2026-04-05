@@ -1,15 +1,20 @@
 import type { ApiClient } from "./api-client/api-client.js";
 import type { FileView, ListOptions } from "./api-client/validators.js";
+import { encrypt } from "./encrypt.js";
 
 export class File {
   constructor(
     private sandboxId: string,
-    private client: ApiClient
+    private client: ApiClient,
+    private publicKeyHex?: string,
   ) {}
 
   async write(path: string, content: string): Promise<void> {
+    const encryptedContent = this.publicKeyHex
+      ? await encrypt(content, this.publicKeyHex)
+      : content;
     await this.client.post("io.pocketenv.file.addFile", {
-      file: { sandboxId: this.sandboxId, path, content },
+      file: { sandboxId: this.sandboxId, path, content: encryptedContent },
     });
   }
 
@@ -24,15 +29,18 @@ export class File {
   async get(id: string): Promise<FileView> {
     const res = await this.client.get<{ file: FileView }>(
       "io.pocketenv.file.getFile",
-      { id }
+      { id },
     );
     return res.file;
   }
 
   async update(id: string, path: string, content: string): Promise<void> {
+    const encryptedContent = this.publicKeyHex
+      ? await encrypt(content, this.publicKeyHex)
+      : content;
     await this.client.post("io.pocketenv.file.updateFile", {
       id,
-      file: { path, content },
+      file: { path, content: encryptedContent },
     });
   }
 

@@ -390,7 +390,8 @@ describe("sandbox.file", () => {
     expect(url).toContain("addFile");
     const body = JSON.parse(init.body as string);
     expect(body.file.path).toBe("/tmp/foo.txt");
-    expect(body.file.content).toBe("hello world");
+    expect(typeof body.file.content).toBe("string");
+    expect(body.file.content.length).toBeGreaterThan(0);
   });
 
   test("list returns files", async () => {
@@ -747,6 +748,55 @@ describe("sandbox.service", () => {
 
     const [url] = fetchSpy.mock.calls[0] as [string, RequestInit];
     expect(url).toContain("deleteService");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Sub-resource: Copy
+// ---------------------------------------------------------------------------
+
+describe("sandbox.copy", () => {
+  let fetchSpy: ReturnType<typeof spyOn>;
+  let sandbox: Sandbox;
+
+  beforeEach(async () => {
+    fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      text: async () => JSON.stringify(mockSandboxView()),
+    } as Response);
+    sandbox = await Sandbox.create({ base: "openclaw", token: "tok" });
+    fetchSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    fetchSpy?.mockRestore();
+  });
+
+  test("to calls pushDirectory then pullDirectory", async () => {
+    fetchSpy = spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce({
+        ok: true,
+        text: async () => JSON.stringify({ uuid: "uuid-123" }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        text: async () => "",
+      } as Response);
+
+    await sandbox.copy.to("dest-sandbox", "/src/path", "/dst/path");
+
+    const calls = fetchSpy.mock.calls as [string, RequestInit][];
+    expect(calls[0][0]).toContain("pushDirectory");
+    expect(JSON.parse(calls[0][1].body as string)).toMatchObject({
+      sandboxId: "sandbox-1",
+      directoryPath: "/src/path",
+    });
+    expect(calls[1][0]).toContain("pullDirectory");
+    expect(JSON.parse(calls[1][1].body as string)).toMatchObject({
+      uuid: "uuid-123",
+      sandboxId: "dest-sandbox",
+      directoryPath: "/dst/path",
+    });
   });
 });
 

@@ -23,12 +23,14 @@ export interface SandboxView {
 export interface SecretView {
   id: string;
   name: string;
+  createdAt: string;
 }
 
 export interface VariableView {
   id: string;
   name: string;
   value: string;
+  createdAt: string;
 }
 
 export interface FileView {
@@ -53,12 +55,14 @@ export interface ServiceView {
   command: string;
   description?: string;
   ports?: number[];
+  status?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface PortView {
   port: number;
+  description?: string;
   previewUrl?: string;
 }
 
@@ -96,11 +100,13 @@ export interface CreateSandboxOptions {
   secrets?: Array<{ name: string; value: string }>;
   envs?: Array<{ name: string; value: string }>;
   keepAlive?: boolean;
+  providerOptions?: Record<string, unknown>;
 }
 
 export interface ListOptions {
   limit?: number;
   offset?: number;
+  isRunning?: boolean;
 }
 
 export type Profile = {

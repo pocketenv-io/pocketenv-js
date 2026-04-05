@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-04-05
+
+### Added
+
+- **`sandbox.copy`** sub-resource — copy files and directories between local and sandbox environments:
+  - `copy.upload(localPath, sandboxPath)` — compress a local file/directory with ignore-file support (`.pocketenvignore`, `.gitignore`, `.npmignore`, `.dockerignore`) and upload it to the sandbox.
+  - `copy.download(sandboxPath, localPath)` — download a directory from the sandbox and extract it locally.
+  - `copy.to(destinationSandboxId, sourcePath, destPath)` — copy a path from this sandbox directly into another sandbox (no local download needed).
+- All copy methods accept an optional `{ signal }` option for cancellation via `AbortController`.
+- **`Sandbox.configure({ storageUrl })`** — optional override for the storage service URL (defaults to `https://sandbox.pocketenv.io`).
+
 ## [0.2.0] - 2026-04-05
 
 ### Added

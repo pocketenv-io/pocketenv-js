@@ -1,10 +1,26 @@
+const DEFAULT_STORAGE_URL = "https://sandbox.pocketenv.io";
+
 export class ApiClient {
   readonly baseUrl: string;
+  readonly storageUrl: string;
   private token: string;
 
-  constructor({ baseUrl, token }: { baseUrl: string; token: string }) {
+  constructor({
+    baseUrl,
+    token,
+    storageUrl,
+  }: {
+    baseUrl: string;
+    token: string;
+    storageUrl?: string;
+  }) {
     this.baseUrl = baseUrl;
     this.token = token;
+    this.storageUrl = storageUrl ?? DEFAULT_STORAGE_URL;
+  }
+
+  authHeader(): string {
+    return `Bearer ${this.token}`;
   }
 
   async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
