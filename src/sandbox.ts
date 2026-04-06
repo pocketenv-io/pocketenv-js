@@ -240,10 +240,11 @@ export class Sandbox {
 
   static async get(id: string, client?: ApiClient): Promise<Sandbox> {
     const c = Sandbox.getClient(client);
-    const data = await c.get<SandboxView>(
+    const response = await c.get<{ sandbox: SandboxView } | SandboxView>(
       "io.pocketenv.sandbox.getSandbox",
       { id },
     );
+    const data = "sandbox" in response ? response.sandbox : response;
     return new Sandbox(data, c, Sandbox.resolvePublicKey());
   }
 

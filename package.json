@@ -1,6 +1,6 @@
 {
   "name": "@pocketenv/sdk",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Official JavaScript/TypeScript SDK for the Pocketenv API",
   "type": "module",
   "main": "./dist/index.js",

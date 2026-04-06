@@ -1,7 +1,5 @@
 import { Sandbox } from "../src/index";
 
-Sandbox.configure({ token: process.env.POCKETENV_TOKEN! });
-
 const sandbox = await Sandbox.get("ruinous-straw-wz8n");
 console.log(`Sandbox: ${sandbox.id} `);
 
