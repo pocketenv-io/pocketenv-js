@@ -1,6 +1,6 @@
 import { Sandbox } from "../src/index";
 
-Sandbox.configure();
+//Sandbox.configure();
 const { sandboxes, total } = await Sandbox.list({ limit: 10, offset: 0 });
 
 console.log(`Total sandboxes: ${total}`);

@@ -15,15 +15,22 @@ npm install @pocketenv/sdk
 bun add @pocketenv/sdk
 ```
 
+## Authentication
+
+The SDK resolves your API token from the first available source:
+
+1. Passed explicitly to `Sandbox.configure({ token })` or `Sandbox.create({ token })`
+2. `POCKETENV_TOKEN` environment variable
+3. `~/.pocketenv/token.json` — a JSON file with the shape `{ "token": "tok_..." }`
+
+This means `Sandbox.configure()` is **optional** if you have a token file or environment variable set.
+
 ## Quick Start
 
 ```ts
 import { Sandbox } from "@pocketenv/sdk";
 
-// Configure once (e.g. at app startup)
-Sandbox.configure({ token: process.env.POCKETENV_TOKEN! });
-
-// Create a sandbox
+// No configuration needed if ~/.pocketenv/token.json or POCKETENV_TOKEN is set
 const sandbox = await Sandbox.create({ base: "openclaw" });
 
 // Run a command
@@ -43,7 +50,7 @@ await sandbox.delete();
 
 ### `Sandbox.configure({ token?, baseUrl? })`
 
-Set a global API token (and optional base URL) used by all subsequent calls.
+Optionally set a global API token (and optional base URL) used by all subsequent calls. If omitted, the SDK falls back to `POCKETENV_TOKEN` or `~/.pocketenv/token.json`.
 
 ### `Sandbox.create(options)`
 

@@ -44,9 +44,18 @@ function makeFetchMock(responses: Array<{ ok: boolean; body: unknown }>) {
 // ---------------------------------------------------------------------------
 
 describe("Sandbox.configure / getClient", () => {
+  let savedToken: string | undefined;
+
   beforeEach(() => {
-    // Reset the static client between tests
     (Sandbox as unknown as { _client: null })._client = null;
+    // Prevent file-system reads so tests are environment-agnostic
+    (Sandbox as unknown as { _readTokenFromFile: () => undefined })._readTokenFromFile = () => undefined;
+    savedToken = process.env.POCKETENV_TOKEN;
+    delete process.env.POCKETENV_TOKEN;
+  });
+
+  afterEach(() => {
+    if (savedToken !== undefined) process.env.POCKETENV_TOKEN = savedToken;
   });
 
   test("configure sets a global client", () => {

@@ -1,3 +1,6 @@
+import { readFileSync } from "fs";
+import { homedir } from "os";
+import { join } from "path";
 import { ApiClient } from "./api-client/api-client.js";
 import type {
   CreateSandboxOptions,
@@ -107,6 +110,17 @@ import { SshKeys } from "./sshkeys.js";
 import { Tailscale } from "./tailscale.js";
 import { Volume } from "./volume.js";
 
+function readTokenFromFile(): string | undefined {
+  try {
+    const tokenPath = join(homedir(), ".pocketenv", "token.json");
+    const content = readFileSync(tokenPath, "utf-8");
+    const parsed = JSON.parse(content) as { token?: unknown };
+    return typeof parsed.token === "string" ? parsed.token : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const DEFAULT_BASE_URL = "https://api.pocketenv.io";
 const DEFAULT_PUBLIC_KEY =
   "2bf96e12d109e6948046a7803ef1696e12c11f04f20a6ce64dbd4bcd93db9341";
@@ -127,6 +141,8 @@ export class Sandbox {
 
   private static _client: ApiClient | null = null;
   private static _publicKey: string | null = null;
+  /** @internal — may be overridden in tests to isolate file-system reads */
+  static _readTokenFromFile: () => string | undefined = readTokenFromFile;
 
   private constructor(
     data: SandboxView,
@@ -157,13 +173,15 @@ export class Sandbox {
     storageUrl?: string;
     publicKey?: string;
   } = {}): void {
-    if (!token && !process.env.POCKETENV_TOKEN) {
+    const resolvedToken =
+      token ?? process.env.POCKETENV_TOKEN ?? Sandbox._readTokenFromFile();
+    if (!resolvedToken) {
       throw new Error(
-        "API token is required. Pass it to configure() or set the POCKETENV_TOKEN environment variable.",
+        'API token is required. Pass it to configure(), set the POCKETENV_TOKEN environment variable, or create ~/.pocketenv/token.json with {"token": "..."}.',
       );
     }
     Sandbox._client = new ApiClient({
-      token: token ?? process.env.POCKETENV_TOKEN!,
+      token: resolvedToken,
       baseUrl: baseUrl ?? DEFAULT_BASE_URL,
       storageUrl,
     });
@@ -172,10 +190,16 @@ export class Sandbox {
   }
 
   private static getClient(client?: ApiClient): ApiClient {
+    if (!client && !Sandbox._client) {
+      const token = process.env.POCKETENV_TOKEN ?? Sandbox._readTokenFromFile();
+      if (token) {
+        Sandbox._client = new ApiClient({ token, baseUrl: DEFAULT_BASE_URL });
+      }
+    }
     const c = client ?? Sandbox._client;
     if (!c) {
       throw new Error(
-        "No API client configured. Call Sandbox.configure({ token }) or pass a client.",
+        'No API client configured. Call Sandbox.configure(), set the POCKETENV_TOKEN environment variable, or create ~/.pocketenv/token.json with {"token": "..."}.',
       );
     }
     return c;
