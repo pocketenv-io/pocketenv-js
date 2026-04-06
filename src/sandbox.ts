@@ -12,7 +12,12 @@ import type {
 } from "./api-client/validators.js";
 
 export class SandboxBuilder {
-  private options: CreateSandboxOptions & { token?: string; baseUrl?: string; storageUrl?: string; publicKey?: string };
+  private options: CreateSandboxOptions & {
+    token?: string;
+    baseUrl?: string;
+    storageUrl?: string;
+    publicKey?: string;
+  };
 
   constructor(base: string) {
     this.options = { base };
@@ -226,9 +231,14 @@ export class Sandbox {
       publicKey?: string;
     },
   ): Promise<Sandbox> {
-    const { token, baseUrl, storageUrl, publicKey, providerOptions, ...rest } = options;
+    const { token, baseUrl, storageUrl, publicKey, providerOptions, ...rest } =
+      options;
     const client = token
-      ? new ApiClient({ token, baseUrl: baseUrl ?? DEFAULT_BASE_URL, storageUrl })
+      ? new ApiClient({
+          token,
+          baseUrl: baseUrl ?? DEFAULT_BASE_URL,
+          storageUrl,
+        })
       : Sandbox.getClient();
     const publicKeyHex = Sandbox.resolvePublicKey(publicKey);
     const data = await client.post<SandboxView>(
@@ -262,7 +272,9 @@ export class Sandbox {
     return c.get("io.pocketenv.actor.getProfile");
   }
 
-  static async getTerminalToken(client?: ApiClient): Promise<string | undefined> {
+  static async getTerminalToken(
+    client?: ApiClient,
+  ): Promise<string | undefined> {
     const c = Sandbox.getClient(client);
     const res = await c.get<{ token?: string }>(
       "io.pocketenv.actor.getTerminalToken",
@@ -270,17 +282,18 @@ export class Sandbox {
     return res.token;
   }
 
-  async waitUntilRunning(
-    options?: { timeoutMs?: number; intervalMs?: number },
-  ): Promise<void> {
+  async waitUntilRunning(options?: {
+    timeoutMs?: number;
+    intervalMs?: number;
+  }): Promise<void> {
     const { timeoutMs = 60_000, intervalMs = 2_000 } = options ?? {};
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
-      const data = await this.client.get<SandboxView>(
+      const data = await this.client.get<{ sandbox: SandboxView }>(
         "io.pocketenv.sandbox.getSandbox",
         { id: this.id },
       );
-      if (data?.status === "RUNNING") return;
+      if (data?.sandbox?.status === "RUNNING") return;
       await new Promise((resolve) => setTimeout(resolve, intervalMs));
     }
     throw new Error(
