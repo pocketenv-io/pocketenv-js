@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.4] - 2026-04-06
+
+### Fixed
+
+- **`Sandbox.get()`** — now handles both bare `SandboxView` and `{ sandbox: SandboxView }` wrapped API responses gracefully.
+
+### Changed
+
+- **Examples** — removed explicit `Sandbox.configure({ token })` calls; token is now resolved automatically from the environment.
+
 ## [0.2.3] - 2026-04-06
 
 ### Changed
