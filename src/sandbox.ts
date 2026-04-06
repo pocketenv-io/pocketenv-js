@@ -304,20 +304,20 @@ export class Sandbox {
   async start(options?: {
     repo?: string;
     keepAlive?: boolean;
-  }): Promise<SandboxView> {
-    return this.client.post("io.pocketenv.sandbox.startSandbox", options, {
+  }): Promise<void> {
+    await this.client.post("io.pocketenv.sandbox.startSandbox", options, {
       id: this.id,
     });
   }
 
-  async stop(): Promise<SandboxView> {
-    return this.client.post("io.pocketenv.sandbox.stopSandbox", undefined, {
+  async stop(): Promise<void> {
+    await this.client.post("io.pocketenv.sandbox.stopSandbox", undefined, {
       id: this.id,
     });
   }
 
-  async delete(): Promise<SandboxView> {
-    return this.client.post("io.pocketenv.sandbox.deleteSandbox", undefined, {
+  async delete(): Promise<void> {
+    await this.client.post("io.pocketenv.sandbox.deleteSandbox", undefined, {
       id: this.id,
     });
   }
@@ -371,11 +371,7 @@ export class Sandbox {
     return this.sshKeys.get();
   }
 
-  async putSshKey(publicKey: string): Promise<void> {
-    await this.client.post(
-      "io.pocketenv.sandbox.putSshKeys",
-      { publicKey },
-      { id: this.id },
-    );
+  async putSshKey(publicKey: string, privateKey: string): Promise<void> {
+    await this.sshKeys.put(publicKey, privateKey);
   }
 }

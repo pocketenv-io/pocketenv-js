@@ -223,15 +223,13 @@ describe("Sandbox instance methods", () => {
   });
 
   test("start calls startSandbox", async () => {
-    const updated = mockSandboxView({ id: "sb-inst", status: "started" });
     fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
-      text: async () => JSON.stringify(updated),
+      text: async () => "{}",
     } as Response);
 
-    const result = await sandbox.start({ keepAlive: true });
+    await sandbox.start({ keepAlive: true });
 
-    expect(result.status).toBe("started");
     const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
     expect(url).toContain("startSandbox");
     expect(url).toContain("id=sb-inst");
@@ -239,15 +237,13 @@ describe("Sandbox instance methods", () => {
   });
 
   test("stop calls stopSandbox", async () => {
-    const updated = mockSandboxView({ id: "sb-inst", status: "stopped" });
     fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
-      text: async () => JSON.stringify(updated),
+      text: async () => "{}",
     } as Response);
 
-    const result = await sandbox.stop();
+    await sandbox.stop();
 
-    expect(result.status).toBe("stopped");
     const [url] = fetchSpy.mock.calls[0] as [string, RequestInit];
     expect(url).toContain("stopSandbox");
   });
@@ -350,19 +346,21 @@ describe("Sandbox instance methods", () => {
     expect(url).toContain("getSshKeys");
   });
 
-  test("putSshKey sends public key (legacy)", async () => {
+  test("putSshKey sends id, publicKey, privateKey, and redacted in body", async () => {
     fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
       text: async () => "",
     } as Response);
 
-    await sandbox.putSshKey("ssh-rsa BBBB...");
+    await sandbox.putSshKey("ssh-rsa BBBB...", "-----BEGIN RSA PRIVATE KEY-----\nMIIE...\n-----END RSA PRIVATE KEY-----");
 
     const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
     expect(url).toContain("putSshKeys");
-    expect(JSON.parse(init.body as string)).toEqual({
-      publicKey: "ssh-rsa BBBB...",
-    });
+    const body = JSON.parse(init.body as string);
+    expect(body.id).toBe("sb-inst");
+    expect(body.publicKey).toBe("ssh-rsa BBBB...");
+    expect(body.privateKey).toBeDefined();
+    expect(body.redacted).toBeDefined();
   });
 });
 

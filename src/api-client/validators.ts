@@ -18,11 +18,14 @@ export interface SandboxView {
   status?: string;
   startedAt?: string;
   timeout?: number;
+  displayName?: string;
+  uri?: string;
 }
 
 export interface SecretView {
   id: string;
   name: string;
+  createdAt?: string;
 }
 
 export interface VariableView {
@@ -53,6 +56,7 @@ export interface ServiceView {
   command: string;
   description?: string;
   ports?: number[];
+  status?: string;
   createdAt: string;
   updatedAt: string;
 }
