@@ -301,10 +301,7 @@ export class Sandbox {
     );
   }
 
-  async start(options?: {
-    repo?: string;
-    keepAlive?: boolean;
-  }): Promise<void> {
+  async start(options?: { repo?: string; keepAlive?: boolean }): Promise<void> {
     await this.client.post("io.pocketenv.sandbox.startSandbox", options, {
       id: this.id,
     });
@@ -361,10 +358,16 @@ export class Sandbox {
     );
   }
 
-  async vscode(): Promise<void> {
-    await this.client.post("io.pocketenv.sandbox.exposeVscode", undefined, {
-      id: this.id,
-    });
+  async vscode(): Promise<string> {
+    const { previewUrl } = await this.client.post<{ previewUrl: string }>(
+      "io.pocketenv.sandbox.exposeVscode",
+      undefined,
+      {
+        id: this.id,
+      },
+    );
+
+    return previewUrl;
   }
 
   async getSshKeys(): Promise<SshKeysView> {
