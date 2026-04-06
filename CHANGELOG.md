@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.5] - 2026-04-06
+
+### Fixed
+
+- **`waitUntilRunning()`** — now correctly expects a `{ sandbox: SandboxView }` wrapped response from `getSandbox` and checks `data.sandbox.status` instead of `data.status`.
+
+### Changed
+
+- **`SandboxBuilder` / `Sandbox.create`** — inline type for options reformatted to multiline for clarity (no behaviour change).
+- **`Sandbox.getTerminalToken`** / **`waitUntilRunning`** — method signatures reformatted to multiline for clarity (no behaviour change).
+
 ## [0.2.4] - 2026-04-06
 
 ### Fixed
