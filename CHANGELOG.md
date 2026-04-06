@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.3] - 2026-04-06
+
+### Changed
+
+- **`Sandbox.configure()`** is now optional. The SDK resolves the API token from the first available source: explicit argument → `POCKETENV_TOKEN` env var → `~/.pocketenv/token.json` (`{ "token": "..." }`).
+
 ## [0.2.2] - 2026-04-05
 
 ### Fixed
