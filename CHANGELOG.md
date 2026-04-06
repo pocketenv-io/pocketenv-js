@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.6] - 2026-04-06
+
+### Changed
+
+- **`Sandbox.start()` / `stop()` / `delete()`** — return type changed from `SandboxView` to `void`; response body is no longer parsed.
+- **`Sandbox.putSshKey(publicKey, privateKey)`** — now accepts a `privateKey` argument and delegates to `sshKeys.put()`, encrypting the private key automatically.
+
+### Added
+
+- **`SandboxView`** — optional `displayName` and `uri` fields.
+- **`SecretView`** — optional `createdAt` field.
+- **`ServiceView`** — optional `status` field.
+
 ## [0.2.5] - 2026-04-06
 
 ### Fixed
