@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.7] - 2026-04-06
+
+### Changed
+
+- **`Sandbox.vscode()`** — return type changed from `void` to `string`; now returns the `previewUrl` of the exposed VS Code instance.
+
 ## [0.2.6] - 2026-04-06
 
 ### Changed
