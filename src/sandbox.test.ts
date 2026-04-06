@@ -324,10 +324,11 @@ describe("Sandbox instance methods", () => {
   test("vscode calls exposeVscode", async () => {
     fetchSpy = spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
-      text: async () => "",
+      text: async () => JSON.stringify({ previewUrl: "https://vscode.example.com" }),
     } as Response);
 
-    await sandbox.vscode();
+    const result = await sandbox.vscode();
+    expect(result).toBe("https://vscode.example.com");
 
     const [url] = fetchSpy.mock.calls[0] as [string, RequestInit];
     expect(url).toContain("exposeVscode");
