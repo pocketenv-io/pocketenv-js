@@ -12,15 +12,11 @@ export class Backup {
     description?: string,
     ttl?: number,
   ): Promise<void> {
-    await this.client.post(
-      "io.pocketenv.sandbox.createBackup",
-      {
-        directory,
-        description,
-        ttl,
-      },
-      { id: this.sandboxId },
-    );
+    await this.client.post("io.pocketenv.sandbox.createBackup", {
+      directory,
+      description,
+      ttl,
+    });
   }
 
   async list(): Promise<{ backups: BackupView[] }> {
