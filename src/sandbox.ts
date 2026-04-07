@@ -3,6 +3,7 @@ import { homedir } from "os";
 import { join } from "path";
 import { ApiClient } from "./api-client/api-client.js";
 import type {
+  BackupView,
   CreateSandboxOptions,
   ExecResult,
   ListOptions,
@@ -114,6 +115,7 @@ import { Service } from "./service.js";
 import { SshKeys } from "./sshkeys.js";
 import { Tailscale } from "./tailscale.js";
 import { Volume } from "./volume.js";
+import { Backup } from "./backup.js";
 
 function readTokenFromFile(): string | undefined {
   try {
@@ -143,6 +145,7 @@ export class Sandbox {
   readonly sshKeys: SshKeys;
   readonly ports: Ports;
   readonly service: Service;
+  readonly backup: Backup;
 
   private static _client: ApiClient | null = null;
   private static _publicKey: string | null = null;
@@ -165,6 +168,7 @@ export class Sandbox {
     this.sshKeys = new SshKeys(data.id, client, publicKeyHex);
     this.ports = new Ports(data.id, client);
     this.service = new Service(data.id, client);
+    this.backup = new Backup(data.id, client);
   }
 
   static configure({
@@ -376,5 +380,23 @@ export class Sandbox {
 
   async putSshKey(publicKey: string, privateKey: string): Promise<void> {
     await this.sshKeys.put(publicKey, privateKey);
+  }
+
+  async createBackup(
+    directory: string,
+    description?: string,
+    ttl?: number,
+  ): Promise<void> {
+    return this.backup.create(directory, description, ttl);
+  }
+
+  async restoreBackup(backupId: string): Promise<void> {
+    await this.backup.restore(backupId);
+  }
+
+  async listBackups(): Promise<{
+    backups: BackupView[];
+  }> {
+    return this.backup.list();
   }
 }

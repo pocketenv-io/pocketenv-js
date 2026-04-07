@@ -126,3 +126,11 @@ export type Profile = {
   createdAt: string;
   updatedAt: string;
 };
+
+export interface BackupView {
+  id: string;
+  directory: string;
+  description?: string;
+  expiresAt?: string;
+  createdAt: string;
+}

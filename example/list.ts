@@ -28,3 +28,10 @@ console.log(`Total envs: ${envs.total}`);
 for (const e of envs.variables) {
   console.log(`  ${e.name}`);
 }
+
+const backups = await sandbox.listBackups();
+
+console.log(`Total backups: ${backups.backups.length}`);
+for (const b of backups.backups) {
+  console.log(`  ${b.id} ${b.directory} : ${b.createdAt}`);
+}
