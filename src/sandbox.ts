@@ -390,8 +390,9 @@ export class Sandbox {
     return this.backup.create(directory, description, ttl);
   }
 
-  async restoreBackup(backupId: string): Promise<void> {
-    await this.backup.restore(backupId);
+  static async restoreBackup(backupId: string): Promise<void> {
+    const c = Sandbox.getClient();
+    await c.post("io.pocketenv.sandbox.restoreBackup", { backupId });
   }
 
   async listBackups(): Promise<{
