@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.10] - 2026-04-07
+
+### Changed
+
+- **`Sandbox.restoreBackup(backupId)`** — promoted to a **static** method; calls `io.pocketenv.sandbox.restoreBackup` directly via `Sandbox.getClient()` instead of delegating to `sandbox.backup.restore()`.
+
 ## [0.2.9] - 2026-04-07
 
 ### Fixed

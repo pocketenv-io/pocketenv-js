@@ -106,7 +106,7 @@ List all sandboxes.
 | `sandbox.putSshKey(publicKey, privateKey)`          | Set an SSH key pair (private key is encrypted automatically)      |
 | `sandbox.createBackup(directory, description?, ttl?)` | Create a backup of a sandbox directory                          |
 | `sandbox.listBackups()`                             | List all backups for the sandbox                                  |
-| `sandbox.restoreBackup(backupId)`                   | Restore the sandbox from a backup                                 |
+| `Sandbox.restoreBackup(backupId)` *(static)*        | Restore a sandbox from a backup                                   |
 
 ### Sub-resources
 
