@@ -102,8 +102,11 @@ List all sandboxes.
 | `sandbox.expose(port, description?)`   | Expose a port publicly |
 | `sandbox.unexpose(port)`               | Remove a port exposure |
 | `sandbox.vscode()`                     | Expose VS Code         |
-| `sandbox.getSshKeys()`                 | Get SSH public key     |
-| `sandbox.putSshKey(publicKey)`         | Set an SSH public key  |
+| `sandbox.getSshKeys()`                                       | Get SSH public key                             |
+| `sandbox.putSshKey(publicKey, privateKey)`                   | Set an SSH key pair                            |
+| `sandbox.createBackup(directory, description?, ttl?)`        | Create a backup of a sandbox directory         |
+| `sandbox.listBackups()`                                      | List all backups for the sandbox               |
+| `sandbox.restoreBackup(backupId)`                            | Restore the sandbox from a backup              |
 
 ### Sub-resources
 
@@ -114,6 +117,7 @@ List all sandboxes.
 - **`sandbox.ports`** — `list`
 - **`sandbox.service`** — `add`, `list`, `start`, `stop`, `restart`, `update`, `delete`
 - **`sandbox.tailscale`** — `getAuthKey`, `setAuthKey`
+- **`sandbox.backup`** — `create(directory, description?, ttl?)`, `list()`, `restore(backupId)`
 
 ## Development
 
