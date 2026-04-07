@@ -92,21 +92,21 @@ List all sandboxes.
 
 ### Instance methods
 
-| Method                                 | Description        |
-|----------------------------------------|--------------------|
-| `sandbox.start({ repo?, keepAlive? })` | Start the sandbox  |
-| `sandbox.stop()`                       | Stop the sandbox   |
-| `sandbox.delete()`                     | Delete the sandbox |
-| `sandbox.exec(command)`                | Run a raw command  |
-| `sandbox.sh\`command\`                 | Run a shell command via `/bin/sh -c` (tagged template or string) |
-| `sandbox.expose(port, description?)`   | Expose a port publicly |
-| `sandbox.unexpose(port)`               | Remove a port exposure |
-| `sandbox.vscode()`                     | Expose VS Code         |
-| `sandbox.getSshKeys()`                                       | Get SSH public key                             |
-| `sandbox.putSshKey(publicKey, privateKey)`                   | Set an SSH key pair                            |
-| `sandbox.createBackup(directory, description?, ttl?)`        | Create a backup of a sandbox directory         |
-| `sandbox.listBackups()`                                      | List all backups for the sandbox               |
-| `sandbox.restoreBackup(backupId)`                            | Restore the sandbox from a backup              |
+| Method                                              | Description                                                       |
+|-----------------------------------------------------|-------------------------------------------------------------------|
+| `sandbox.start({ repo?, keepAlive? })`              | Start the sandbox                                                 |
+| `sandbox.stop()`                                    | Stop the sandbox                                                  |
+| `sandbox.delete()`                                  | Delete the sandbox                                                |
+| `sandbox.exec(command)`                             | Run a raw command                                                 |
+| `sandbox.sh\`command\``                             | Run a shell command via `/bin/sh -c` (tagged template or string)  |
+| `sandbox.expose(port, description?)`                | Expose a port publicly                                            |
+| `sandbox.unexpose(port)`                            | Remove a port exposure                                            |
+| `sandbox.vscode()`                                  | Expose VS Code; returns the preview URL                           |
+| `sandbox.getSshKeys()`                              | Get the sandbox SSH key pair                                      |
+| `sandbox.putSshKey(publicKey, privateKey)`          | Set an SSH key pair (private key is encrypted automatically)      |
+| `sandbox.createBackup(directory, description?, ttl?)` | Create a backup of a sandbox directory                          |
+| `sandbox.listBackups()`                             | List all backups for the sandbox                                  |
+| `sandbox.restoreBackup(backupId)`                   | Restore the sandbox from a backup                                 |
 
 ### Sub-resources
 
