@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.9] - 2026-04-07
+
+### Fixed
+
+- **`Backup.restore()`** — no longer sends the sandbox `id` in the request body; only `backupId` is forwarded.
+
+### Changed
+
+- **`Backup.create()`** — sandbox `id` is now explicitly sent as a query param alongside the backup payload.
+
+## [0.2.8] - 2026-04-07
+
+### Added
+
+- **`sandbox.backup`** sub-resource — new `Backup` class with:
+  - `backup.create(directory, description?, ttl?)` — create a backup of a sandbox directory.
+  - `backup.list()` — list all backups for the sandbox; returns `{ backups: BackupView[] }`.
+  - `backup.restore(backupId)` — restore a sandbox from a backup.
+- **Convenience methods on `Sandbox`**: `createBackup(directory, description?, ttl?)`, `listBackups()`, `restoreBackup(backupId)`.
+- **`BackupView`** type exported from the package root.
+
 ## [0.2.7] - 2026-04-06
 
 ### Changed
